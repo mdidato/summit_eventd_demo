@@ -235,7 +235,7 @@ locals {
 }
 
 resource "azurerm_application_gateway" "network" {
-  name                  = "bofademo_appgateway"
+  name                  = "summit_appgateway"
   location              = var.resource_group_location
   resource_group_name   = var.resource_group_name
 
@@ -246,7 +246,7 @@ resource "azurerm_application_gateway" "network" {
   }
 
   gateway_ip_configuration {
-    name      = "bofademo_appgw_fe_ip_configuration"
+    name      = "summit_appgw_fe_ip_configuration"
     subnet_id = azurerm_subnet.my_terraform_aapgw_subnet.id
   }
 
