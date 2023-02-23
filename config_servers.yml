@@ -1,0 +1,42 @@
+---
+
+- hosts: webservers
+  gather_facts: true
+  become: true
+  tasks:
+
+    - name: Install the latest version of Apache
+      ansible.builtin.dnf:
+        name: httpd
+        state: latest
+    
+    - name: create content for webservers
+      copy:
+        content: "Hello world from {{ inventory_hostname }}"
+        dest: /var/www/html/index.html
+    
+    - name: ensure http port is open on servers
+      ansible.posix.firewalld:
+        zone: public
+        service: http
+        permanent: true
+        state: enabled
+
+    - name: Start service httpd, if not started
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: restart firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
+        enabled: true
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - debug:
+       msg: " Appgateway public ip is {{ gatewayip }}"

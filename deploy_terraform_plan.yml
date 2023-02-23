@@ -1,0 +1,52 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  vars: 
+    project_dir: "./terraform"
+  tasks:
+
+    - name: create storage account for terraform state file
+      azure_rm_storageaccount:
+         resource_group: "{{ RESOURCE_GROUP }}" 
+         type: "Standard_LRS"
+         name: "bofademotfstate"
+
+    - name: Create storage container 
+      azure_rm_storageblob:
+         resource_group: "{{ RESOURCE_GROUP }}"
+         storage_account_name: "bofademotfstate"
+         container: tfstate
+
+    - name: Get facts for one account
+      azure_rm_storageaccount_info:
+         resource_group: "{{ RESOURCE_GROUP }}"
+         name: "bofademotfstate"
+         show_connection_string: true
+      register: storage_facts
+
+    - name: configure provider.tf file
+      ansible.builtin.template:
+        src: providers.j2
+        dest: "{{ project_dir }}/providers.tf"
+
+    - name: configure variable.tf file
+      ansible.builtin.template:
+        src: variables.j2
+        dest: "{{ project_dir }}/variables.tf"
+    
+    - name: deploy terraform plan
+      cloud.terraform.terraform:
+        project_path: '{{ project_dir }}'
+        state: present
+        force_init: true
+    
+    - name: get app gateway pub ip
+      cloud.terraform.terraform_output:
+        project_path: '{{ project_dir }}'
+      register: states
+
+    - name: record the app gateway pub ip to a var
+      set_stats:
+        data:
+          gatewayip: "{{ states.outputs.appgw_fe_ip.value }}"

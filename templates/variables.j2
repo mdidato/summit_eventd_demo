@@ -1,0 +1,19 @@
+variable "resource_group_location" {
+  default     = "{{ LOCATION }}"
+  description = "Location of the resource group."
+}
+
+variable "resource_group_name" {
+  default     = "{{ RESOURCE_GROUP }}"
+  description = "name of resource group"
+}
+
+variable "servername" {
+  description = "list of server names to build"
+  type        = list(string)
+  default     = [
+{% for server in VIRTUALMACHINES %}
+    "{{server}}",
+{% endfor %}
+    ]
+}

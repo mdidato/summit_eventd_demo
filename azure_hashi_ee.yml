@@ -1,0 +1,97 @@
+- name: Playbook custom EE with azure collections and terraform
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - redhat_cop.ee_utilities
+  vars:
+    ee_registry_dest: autohub.scuderiadidato.com
+    ee_registry_username: admin
+    ee_registry_password: "{{ lookup('env','CONTROLLER_PASSWORD') }}"
+    ee_base_registry_username: "{{ lookup('env','REDHAT_USER') }}"
+    ee_base_registry_password: "{{ lookup('env','REDHAT_PASS') }}"
+    ee_pull_collections_from_hub: false
+    ee_list:
+      - name: azure_terraform_ee
+        python:
+          - packaging
+          - requests[security]
+          - xmltodict
+          - azure-cli-core==2.34.0
+          - azure-common==1.1.11
+          - azure-identity==1.7.0
+          - azure-mgmt-authorization==2.0.0
+          - azure-mgmt-apimanagement
+          - azure-mgmt-batch==5.0.1
+          - azure-mgmt-cdn==11.0.0
+          - azure-mgmt-compute==26.1.0
+          - azure-mgmt-containerinstance==9.0.0
+          - azure-mgmt-core==1.3.0
+          - azure-mgmt-containerregistry==9.1.0
+          - azure-containerregistry==1.0.0
+          - azure-mgmt-containerservice==20.0.0
+          - azure-mgmt-datalake-store==1.0.0
+          - azure-mgmt-datafactory==2.0.0
+          - azure-mgmt-dns==8.0.0
+          - azure-mgmt-marketplaceordering==0.1.0
+          - azure-mgmt-monitor==3.0.0
+          - azure-mgmt-managedservices==6.0.0
+          - azure-mgmt-managementgroups==0.2.0
+          - azure-mgmt-network==19.1.0
+          - azure-mgmt-nspkg==2.0.0
+          - azure-mgmt-privatedns==1.0.0
+          - azure-mgmt-redis==13.0.0
+          - azure-mgmt-resource
+          - azure-mgmt-rdbms==10.0.0
+          - azure-mgmt-search==8.0.0
+          - azure-mgmt-servicebus==7.1.0
+          - azure-mgmt-sql==3.0.1
+          - azure-mgmt-storage==19.0.0
+          - azure-mgmt-trafficmanager==1.0.0b1
+          - azure-mgmt-web==6.1.0
+          - azure-nspkg==2.0.0
+          - azure-storage-blob==12.11.0
+          - msrest==0.7.1
+          - msrestazure==0.6.4
+          - azure-keyvault==1.1.0
+          - azure-mgmt-keyvault==10.0.0
+          - azure-graphrbac==0.61.1
+          - azure-mgmt-cosmosdb==6.4.0
+          - azure-mgmt-hdinsight==9.0.0
+          - azure-mgmt-devtestlabs==3.0.0
+          - azure-mgmt-loganalytics==12.0.0
+          - azure-mgmt-automation==1.0.0
+          - azure-mgmt-iothub==2.2.0
+          - azure-mgmt-recoveryservices==2.0.0
+          - azure-mgmt-recoveryservicesbackup==3.0.0
+          - azure-mgmt-notificationhubs==7.0.0
+          - azure-mgmt-eventhub==10.1.0
+          - ansible-core
+          - pylint==2.15.5
+          - yamllint==1.28.0
+          - pytest==7.2.0
+          - pytest-forked==1.4.0
+          - pytest-mock==3.10.0
+          - pytest-xdist==3.0.2
+          - antsibull-docs==1.7.3
+          - python-dotenv[cli]==0.21.0
+          - boto3==1.26.5
+          - black==22.10.0
+          - mypy==0.991
+          - types-PyYAML==6.0.12.2 
+          - docutils
+        collections:
+          - name: redhat_cop.controller_configuration
+          - name: redhat_cop.ah_configuration
+          - name: cloud.terraform 
+          - name: ansible.posix
+          - name: azure.azcollection
+        prepend:
+          - RUN microdnf update
+          - RUN microdnf install -y yum-utils
+          - RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+          - RUN microdnf install -y terraform
+          - RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
+          - RUN rpm --install https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm
+          - RUN microdnf install -y azure-cli
+  roles:
+    - redhat_cop.ee_utilities.ee_builder

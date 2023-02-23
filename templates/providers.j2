@@ -1,0 +1,21 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+   backend "azurerm" {
+        resource_group_name  = "{{ RESOURCE_GROUP }}"
+        storage_account_name = "bofademotfstate"
+        container_name       = "tfstate"
+        key                  = "terraform.tfstate"
+        access_key           = "{{ storage_facts['storageaccounts'] |selectattr('primary_endpoints','defined')|map(attribute='primary_endpoints')|selectattr('key','defined')|map(attribute='key')| first }}"
+    }
+}
+
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  features {}
+}
+
