@@ -23,7 +23,7 @@
   become: False
   environment:
     ANSIBLE_HOST_KEY_CHECKING: false
-    CONTROLLER_HOST: "{{ controller_hostname }}"
+    CONTROLLER_HOST: "{{ controller_ip }}"
     CONTROLLER_PASSWORD: "{{ controller_password }}"
     CONTROLLER_USERNAME: "{{ controller_username }}"
 
