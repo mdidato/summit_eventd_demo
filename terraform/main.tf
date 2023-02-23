@@ -119,13 +119,13 @@ resource "azurerm_network_interface" "my_terraform_nic_aap" {
 
 
 # Connect the security group to the network interface
-resource "azurerm_network_interface_security_group_association" "example" {
+resource "azurerm_network_interface_security_group_association" "WebnsgConnect" {
   count               = length(var.servername)
   network_interface_id      = azurerm_network_interface.my_terraform_nic[count.index].id
   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 }
 
-resource "azurerm_network_interface_security_group_association" "example" {
+resource "azurerm_network_interface_security_group_association" "AAPnsgConnect" {
   count               = length(var.aapservername)
   network_interface_id      = azurerm_network_interface.my_terraform_nic_aap[count.index].id
   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
