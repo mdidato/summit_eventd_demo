@@ -9,10 +9,20 @@ variable "resource_group_name" {
 }
 
 variable "servername" {
-  description = "list of server names to build"
+  description = "list of web server names to build"
   type        = list(string)
   default     = [
-{% for server in VIRTUALMACHINES %}
+{% for server in WEBSERVERS %}
+    "{{server}}",
+{% endfor %}
+    ]
+}
+
+variable "aapservername" {
+  description = "list of AAP server names to build"
+  type        = list(string)
+  default     = [
+{% for server in AAPSERVERS %}
     "{{server}}",
 {% endfor %}
     ]

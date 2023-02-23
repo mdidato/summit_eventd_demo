@@ -1,6 +1,6 @@
 # Create virtual network
 resource "azurerm_virtual_network" "my_terraform_network" {
-  name                = "bofademoVnet"
+  name                = "summitVnet"
   address_space       = ["10.0.0.0/16"]
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
@@ -8,14 +8,14 @@ resource "azurerm_virtual_network" "my_terraform_network" {
 
 # Create subnet
 resource "azurerm_subnet" "my_terraform_subnet" {
-  name                 = "bofademoSubnet"
+  name                 = "summitSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_subnet" "my_terraform_aapgw_subnet" {
-  name                 = "bofademoAppGWSubnet"
+  name                 = "summitAppGWSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.my_terraform_network.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -31,10 +31,18 @@ resource "azurerm_public_ip" "my_terraform_public_ip" {
 }
 
 resource "azurerm_public_ip" "my_terraform_public_ip_appgw" {
-  name                = "bofademo_appgw_pubip"
+  name                = "summit_appgw_pubip"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_public_ip" "my_terraform_public_ip_aap" {
+  name                = "summit_aap_pubip"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Dynamic"
   sku                 = "Standard"
 }
 
@@ -79,7 +87,7 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
   }
 }
 
-# Create network interface
+# Create network interface for web servers
 resource "azurerm_network_interface" "my_terraform_nic" {
   count               = length(var.servername)
   name                = "${var.servername[count.index]}_nic"
@@ -94,11 +102,32 @@ resource "azurerm_network_interface" "my_terraform_nic" {
   }
 }
 
+# create network interface for AAP servers
+resource "azurerm_network_interface" "my_terraform_nic_aap" {
+  count               = length(var.aapservername)
+  name                = "${var.aapservername[count.index]}_nic"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+
+  ip_configuration {
+    name                          = "${var.aapservername[count.index]}_nic_config"
+    subnet_id                     = azurerm_subnet.my_terraform_subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip_aap[count.index].id
+  }
+}
+
 
 # Connect the security group to the network interface
 resource "azurerm_network_interface_security_group_association" "example" {
   count               = length(var.servername)
   network_interface_id      = azurerm_network_interface.my_terraform_nic[count.index].id
+  network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "example" {
+  count               = length(var.aapservername)
+  network_interface_id      = azurerm_network_interface.my_terraform_nic_aap[count.index].id
   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 }
 
@@ -121,13 +150,8 @@ resource "azurerm_storage_account" "my_storage_account" {
   account_replication_type = "LRS"
 }
 
-# Create (and display) an SSH key
-#resource "tls_private_key" "example_ssh" {
-#  algorithm = "RSA"
-#  rsa_bits  = 4096
-#}
 
-# Create virtual machine
+# Create virtual machine web servers
 resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   count                 = length(var.servername)
   name                  = var.servername[count.index]
@@ -150,6 +174,42 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   }
 
   computer_name                   = var.servername[count.index]
+  admin_username                  = "azureuser"
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDPZA3N3U15rqQVtgUBH9inE6YW/ubCGJ8dkVqmMp8pTCTMG9wNmIlx0/hzu8gmAAR4PM6DBtjQMVgAukNoUNAOM9UAgEILWcWXbP7OfVQGit03GAsn2u+M6yJd1rXMeSDEYOYRocabt5vWdNhJNkbyitgNTA6SklqmDbQe/7cMVWzZCwEmW3vS5i2laNOEYOVXDjv2q0RDDlW/orufquRJntXuLY7LqSkiv0V+aVtXciXgj1IZh33sZ/hqQl7QqDI/tX4Xi6LFq6gipjrJHYIjzoi/dEO8zAHsQQVfHoeM/Qt9lcDDz5Oe2XJFhRFosplXvDO6/2imodG1vOW9ZRvxbqiix6+yxflgo9vhZ9GIgPiHXKoiCQtl9qXnPS/wZcDAFJkvEPFSMvGCpivbzJjeCCaSN9Igefvq2DMuxCmUCMR+U1JznwOr+bgWS23iZ63x1WcR80Sf6EW93bIWxa8cqkrO3pNHBR4/KcAWcwlb2iSgfxviZhhjYIr6asOYFK9vtaStgI7jzs0Y35g9Tp2XrgkFt8feVMfcpZ9q5qi647romYESeThY/yLtyoGaDTjICFotOKwRH0G4i9JFTAJm3CjEaXMp4WLaK94tuM+BQJrzevXjLBKZX2cDh2PE6fB26Fp3BTKFjdH3c27CvTNRC1w0W425pS+RPdjRESYNwQ== mdidato@mdidato-mac"
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
+  }
+}
+
+# Create virtual machine AAP servers
+resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
+  count                 = length(var.aapservername)
+  name                  = var.aapservername[count.index]
+  location              = var.resource_group_location
+  resource_group_name   = var.resource_group_name
+  network_interface_ids = [azurerm_network_interface.my_terraform_nic_ip[count.index].id]
+  size                  = "Standard_DS1_v2"
+
+  os_disk {
+    name                 = "${var.aapservername[count.index]}_OSdisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "9_0"
+    version   = "latest"
+  }
+
+  computer_name                   = var.aapservername[count.index]
   admin_username                  = "azureuser"
   disable_password_authentication = true
 
