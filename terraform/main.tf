@@ -39,7 +39,8 @@ resource "azurerm_public_ip" "my_terraform_public_ip_appgw" {
 }
 
 resource "azurerm_public_ip" "my_terraform_public_ip_aap" {
-  name                = "summit_aap_pubip"
+  count               = length(var.aapservername)
+  name                = "${var.aapservername[count.index]}_pubip"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
   allocation_method   = "Dynamic"
