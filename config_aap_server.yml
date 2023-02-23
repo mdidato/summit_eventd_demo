@@ -4,6 +4,15 @@
   become: true
   tags: prep nodes
 
+  pre_tasks:
+
+    - name: add space to home volume
+      community.general.lvol:
+        vg: rootvg
+        lv: homelv
+        size: 10G
+        resizefs: true
+  
   roles:
     - redhat_cop.aap_utilities.aap_setup_download
     - redhat_cop.aap_utilities.aap_setup_prepare

@@ -194,7 +194,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm_aap" {
   location              = var.resource_group_location
   resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.my_terraform_nic_aap[count.index].id]
-  size                  = "Standard_DS1_v2"
+  size                  = "Standard_B4ms"
 
   os_disk {
     name                 = "${var.aapservername[count.index]}_OSdisk"
