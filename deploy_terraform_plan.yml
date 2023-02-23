@@ -10,18 +10,18 @@
       azure_rm_storageaccount:
          resource_group: "{{ RESOURCE_GROUP }}" 
          type: "Standard_LRS"
-         name: "bofademotfstate"
+         name: "summitdemotfstate"
 
     - name: Create storage container 
       azure_rm_storageblob:
          resource_group: "{{ RESOURCE_GROUP }}"
-         storage_account_name: "bofademotfstate"
+         storage_account_name: "summitdemotfstate"
          container: tfstate
 
     - name: Get facts for one account
       azure_rm_storageaccount_info:
          resource_group: "{{ RESOURCE_GROUP }}"
-         name: "bofademotfstate"
+         name: "summitdemotfstate"
          show_connection_string: true
       register: storage_facts
 
@@ -34,7 +34,7 @@
       ansible.builtin.template:
         src: variables.j2
         dest: "{{ project_dir }}/variables.tf"
-    
+
     - name: deploy terraform plan
       cloud.terraform.terraform:
         project_path: '{{ project_dir }}'

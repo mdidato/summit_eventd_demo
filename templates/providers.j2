@@ -7,7 +7,7 @@ terraform {
   }
    backend "azurerm" {
         resource_group_name  = "{{ RESOURCE_GROUP }}"
-        storage_account_name = "bofademotfstate"
+        storage_account_name = "summitdemotfstate"
         container_name       = "tfstate"
         key                  = "terraform.tfstate"
         access_key           = "{{ storage_facts['storageaccounts'] |selectattr('primary_endpoints','defined')|map(attribute='primary_endpoints')|selectattr('key','defined')|map(attribute='key')| first }}"
