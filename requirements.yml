@@ -1,3 +1,4 @@
 collections:
   - ansible.controller
   - redhat_cop.aap_utilities
+  - community.general
