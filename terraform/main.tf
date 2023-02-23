@@ -48,7 +48,7 @@ resource "azurerm_public_ip" "my_terraform_public_ip_aap" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "my_terraform_nsg" {
-  name                = "bofademoNetworkSecurityGroup"
+  name                = "SummitNSG"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 
