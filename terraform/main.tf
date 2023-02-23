@@ -188,7 +188,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
 }
 
 # Create virtual machine AAP servers
-resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
+resource "azurerm_linux_virtual_machine" "my_terraform_vm_aap" {
   count                 = length(var.aapservername)
   name                  = var.aapservername[count.index]
   location              = var.resource_group_location
