@@ -18,14 +18,22 @@
     - redhat_cop.aap_utilities.aap_setup_prepare
     - redhat_cop.aap_utilities.aap_setup_install
 
-#- hosts: localhost
-#  gather_facts: false
-#  become: False
-#  environment:
-#    ANSIBLE_HOST_KEY_CHECKING: false
-#    CONTROLLER_HOST: "{{ controller_hostname }}"
-#    CONTROLLER_PASSWORD: "{{ controller_password }}"
-#    CONTROLLER_USERNAME: "{{ controller_username }}"
-# 
-#  roles:
-#    - config_aap 
+- hosts: localhost
+  gather_facts: false
+  become: False
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+    CONTROLLER_HOST: "{{ controller_hostname }}"
+    CONTROLLER_PASSWORD: "{{ controller_password }}"
+    CONTROLLER_USERNAME: "{{ controller_username }}"
+
+  tasks:
+    - name: copy required files to gateway servers
+      copy:
+        src: "{{ manifest }}"
+        dest: "/tmp/manifest_AAP_demo.zip"
+
+    - name: Set the license using a file
+      ansible.controller.license:
+        manifest: "/tmp/manifest_AAP_demo.zip"
+        validate_certs: false
