@@ -1,0 +1,22 @@
+---
+- hosts: controller
+  gather_facts: false
+  become: true
+  tags: prep nodes
+
+  roles:
+    - redhat_cop.aap_utilities.aap_setup_download
+    - redhat_cop.aap_utilities.aap_setup_prepare
+    - redhat_cop.aap_utilities.aap_setup_install
+
+#- hosts: localhost
+#  gather_facts: false
+#  become: False
+#  environment:
+#    ANSIBLE_HOST_KEY_CHECKING: false
+#    CONTROLLER_HOST: "{{ controller_hostname }}"
+#    CONTROLLER_PASSWORD: "{{ controller_password }}"
+#    CONTROLLER_USERNAME: "{{ controller_username }}"
+# 
+#  roles:
+#    - config_aap 

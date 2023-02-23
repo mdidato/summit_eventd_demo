@@ -1,0 +1,31 @@
+---
+aap_setup_down_offline_token: "{{ lookup('env','RHTOKEN') }}"
+controller_password: "{{ lookup('env','CONTROLLER_PASSWORD') }}"
+
+manifest: "/home/mdidato/manifest_AAP_demo.zip"
+
+aap_setup_down_version: "2.3"
+aap_setup_rhel_version: "9"
+aap_setup_down_dest_dir: "{{ aap_setup_working_dir | default('/var/tmp') }}"
+aap_setup_down_type: setup-bundle
+
+controller_hostname: "controller01.internal.cloudapp.net"
+controller_username: "admin"
+controller_oauthtoken: ""
+controller_config_file: ""
+controller_validate_certs: false
+
+
+aap_setup_prep_inv_nodes:
+   automationcontroller:
+      controller01.internal.cloudapp.net: 
+
+aap_setup_prep_inv_vars:
+   all:
+     admin_password: "{{ controller_password }}"
+     pg_password: "{{ controller_password }}"
+     pg_host: ""
+     pg_port: '5432'
+     pg_database: 'awx'
+     pg_username: 'awx'
+     pg_sslmode: 'prefer'  # set to 'verify-full' for client-side enforced
