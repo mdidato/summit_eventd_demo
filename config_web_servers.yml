@@ -11,7 +11,7 @@
         state: latest
     
     - name: create content for webservers
-      copy:
+      ansible.builtin.copy:
         content: "Hello world from {{ inventory_hostname }}"
         dest: /var/www/html/index.html
     

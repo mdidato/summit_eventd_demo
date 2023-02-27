@@ -29,7 +29,7 @@
 
   tasks:
     - name: copy required files to gateway servers
-      copy:
+      ansible.builtin.copy:
         src: "{{ manifest }}"
         dest: "/tmp/manifest_AAP_demo.zip"
 
