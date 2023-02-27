@@ -47,6 +47,7 @@
         inputs:
           username: "{{ github_user }}"
           password: "{{ github_password }}"
+        validate_certs: fasle
 
     - name: add azure resource manager creds
       ansible.controller.credential:
