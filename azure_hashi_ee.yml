@@ -7,11 +7,19 @@
     ee_registry_dest: autohub.scuderiadidato.com
     ee_registry_username: admin
     ee_registry_password: "{{ lookup('env','CONTROLLER_PASSWORD') }}"
-    ee_base_registry_username: "{{ lookup('env','REDHAT_USER') }}"
-    ee_base_registry_password: "{{ lookup('env','REDHAT_PASS') }}"
-    ee_pull_collections_from_hub: false
+#    ee_base_registry_username: "{{ lookup('env','REDHAT_USER') }}"
+#    ee_base_registry_password: "{{ lookup('env','REDHAT_PASS') }}"
+#    ee_base_registry_username: "admin"
+#    ee_base_registry_password: "{{ lookup('env','CONTROLLER_PASSWORD') }}"
+#    ee_base_image: autohub.scuderiadidato.com/azure_terraform_ee
+#    ee_builder_image: autohub.scuderiadidato.com/ansible-builder-rhel8
+    ee_pull_collections_from_hub: true
+    ee_ah_host: autohub.scuderiadidato.com
+    ee_ah_token: ""
+    ee_verbosity: 1
+    ee_stream: upstream
     ee_list:
-      - name: azure_terraform_ee
+      - name: summit_demo_ee
         python:
           - packaging
           - requests[security]
@@ -83,16 +91,15 @@
           - name: cloud.terraform 
           - name: ansible.posix
           - name: azure.azcollection
-          - name: community.general
           - name: redhat_cop.aap_utilities
           - name: ansible.controller
         prepend:
-          - RUN microdnf update
-          - RUN microdnf install -y yum-utils
+          #- RUN microdnf update
+          - RUN dnf install -y yum-utils
           - RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-          - RUN microdnf install -y terraform
+          - RUN dnf install -y terraform
           - RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
           - RUN rpm --install https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm
-          - RUN microdnf install -y azure-cli
+          - RUN dnf install -y azure-cli
   roles:
     - redhat_cop.ee_utilities.ee_builder
