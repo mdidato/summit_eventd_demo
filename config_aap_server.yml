@@ -37,3 +37,72 @@
       ansible.controller.license:
         manifest: "/tmp/manifest_AAP_demo.zip"
         validate_certs: false
+
+    - name: Create github creds
+      credential:
+        name: summit_demo_github
+        organization: Default
+        state: present
+        credential_type: Source Control
+        inputs:
+          username: "{{ github_user }}"
+          password: "{{ github_password }}"
+
+    - name: add azure resource manager creds
+      ansible.controller.credential:
+        name: azure_rm_cred
+        credential_type: "Microsoft Azure Resource Manager"
+        organization: Default
+        validate_certs: false
+        inputs:
+          client: "{{ lookup('env','ARM_CLIENT_ID') }}"
+          secret: "{{ lookup('env','ARM_CLIENT_SECRET') }}"
+          tenant: "{{ lookup('env','ARM_TENANT_ID') }}"
+          subscription: "{{ lookup('env','ARM_SUBSCRIPTION_ID') }}"
+
+    - name: Add project AAP
+      ansible.controller.project:
+        name: AAP_Deploy_Azure
+        scm_type: git
+        scm_url: https://github.com/mdidato/summit_eventd_demo.git
+        scm_branch: main
+        scm_clean: true
+        description: "Summit Demo Repo"
+        organization: Default
+        wait: true
+        validate_certs: false
+        credential: summit_demo_github
+
+    - name: Add azure dynamic inventory
+      ansible.controller.inventory:
+        name: "azure_dynamic_inv"
+        description: "Azure Dynamic Inventory"
+        organization: "Default"
+        state: present
+        validate_certs: false
+
+    - name: Add Azure inventory source
+      ansible.controller.inventory_source:
+        name: "azure-dynamic-inventory"
+        inventory: "azure_dynamic_inv"
+        credential: azure_rm_cred
+        overwrite: True
+        update_on_launch: True
+        organization: Default
+        validate_certs: false
+        source: azure_rm
+        source_vars:
+          plain_host_names: true
+          conditional_groups:
+            webservers: "'webserver' in name"
+            controller: "'controller' in name"
+            monitor: "'checkmk' in name"
+          hostvar_expressions:
+            ansible_user: "'azureuser'"
+
+    - name: sync azure dynamic inventory
+      ansible.controller.inventory_source_update:
+        name: "azure-dynamic-inventory"
+        inventory: "azure_dynamic_inv"
+        organization: Default
+        validate_certs: false
