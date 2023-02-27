@@ -39,7 +39,7 @@
         validate_certs: false
 
     - name: Create github creds
-      credential:
+      ansible.controller.credential:
         name: summit_demo_github
         organization: Default
         state: present
