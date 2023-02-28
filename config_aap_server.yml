@@ -62,7 +62,7 @@
 
     - name: Add project AAP
       ansible.controller.project:
-        name: AAP_Deploy_Azure
+        name: summit_demo
         scm_type: git
         scm_url: https://github.com/mdidato/summit_eventd_demo.git
         scm_branch: main
@@ -71,7 +71,7 @@
         organization: Default
         wait: true
         validate_certs: false
-        credential: summit_demo_github
+        credential: githubaccesstocken
 
     - name: Add azure dynamic inventory
       ansible.controller.inventory:
