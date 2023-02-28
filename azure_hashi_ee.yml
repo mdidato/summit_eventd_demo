@@ -93,6 +93,7 @@
           - name: azure.azcollection
           - name: redhat_cop.aap_utilities
           - name: ansible.controller
+          - name: community.general
         prepend:
           #- RUN microdnf update
           - RUN dnf install -y yum-utils
