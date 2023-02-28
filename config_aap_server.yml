@@ -38,6 +38,11 @@
         manifest: "/tmp/manifest_AAP_demo.zip"
         validate_certs: false
 
+    - name: Fetch private key
+      slurp:
+        src: '{{ githubkey }}'
+      register: gitkey
+
     - name: Create github creds
       ansible.controller.credential:
         name: summit_demo_github
@@ -45,7 +50,7 @@
         state: present
         credential_type: Source Control
         inputs:
-          ssh_key_data: "{{ githubkey }}"
+          ssh_key_data: "{{ gitkey['content'] | b64decode }}"
         validate_certs: false 
     
     - name: add azure resource manager creds
