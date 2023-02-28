@@ -45,7 +45,7 @@
         state: present
         credential_type: Source Control
         inputs:
-          ssh_key_data: '{{ githubkey | b64decode }}'
+          ssh_key_data: "{{ lookup('var', 'githubkey') }}"
         validate_certs: false 
     
     - name: add azure resource manager creds
