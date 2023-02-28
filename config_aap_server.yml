@@ -45,9 +45,9 @@
         state: present
         credential_type: Source Control
         inputs:
-          username: "{{ github_user }}"
-          password: "{{ github_password }}"
+          ssh_key_data: "{{ githubkey | b64decode }}"
         validate_certs: false 
+    
     - name: add azure resource manager creds
       ansible.controller.credential:
         name: azure_rm_cred
@@ -71,7 +71,7 @@
         organization: Default
         wait: true
         validate_certs: false
-        credential: githubaccesstocken
+        credential: summit_demo_github
 
     - name: Add azure dynamic inventory
       ansible.controller.inventory:
