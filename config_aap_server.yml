@@ -22,7 +22,7 @@
     
     - name: grab ssh keys from remote server
       ansible.builtin.fetch:
-        src:  {{ item }}
+        src:  "{{ item }}"
         dest: /tmp/
         flat: true
       vars:
