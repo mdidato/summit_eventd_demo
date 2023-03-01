@@ -37,6 +37,7 @@
       ansible.builtin.fetch:
         src: /home/mdidato/.ssh/{{ item }}
         dest: /tmp/
+        flat: true
       vars:
         ansible_ssh_user: "mdidato"
       delegate_to: ansible.scuderiadidato.com
