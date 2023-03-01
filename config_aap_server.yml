@@ -19,23 +19,18 @@
     CONTROLLER_USERNAME: "{{ controller_username }}"
 
   tasks:
-    - name: copy required files to gateway servers
-      ansible.builtin.copy:
-        src: "{{ manifest }}"
-        dest: "/tmp/manifest_AAP_demo.zip"
-
+    
     - name: grab ssh keys from remote server
       ansible.builtin.fetch:
-        src: /home/mdidato/.ssh/{{ item }}
+        src:  {{ item }}
         dest: /tmp/
         flat: true
       vars:
         ansible_ssh_user: "mdidato"
-      delegate_to: ansible.scuderiadidato.com
+      delegate_to: "{{ remote_files_server }}"
       loop:
-        - github_rsa
-        - id_cloud_init
-
+         "{{ remote_files }}"
+    
     - name: ingest ssh private key
       slurp:
         src: '/tmp/id_cloud_init' 
@@ -142,3 +137,8 @@
         job_template: "summit_demo_ping"
         validate_certs: false
       register: job
+
+    - name: Install collection community.network
+      community.general.ansible_galaxy_install:
+        type: collection
+        name: ansible.eda
