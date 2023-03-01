@@ -44,9 +44,6 @@
       loop:
         - github_rsa
         - id_cloud_init
-      register: fetchresult
-
-    - debug: var=fetchresult
 
     - name: Set the license using a file
       ansible.controller.license:
@@ -79,7 +76,7 @@
       ansible.controller.project:
         name: summit_demo
         scm_type: git
-        scm_url: https://github.com/mdidato/summit_eventd_demo.git
+        scm_url: git@github.com:mdidato/summit_eventd_demo.git
         scm_branch: main
         scm_clean: true
         description: "Summit Demo Repo"
