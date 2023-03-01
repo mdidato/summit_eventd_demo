@@ -148,6 +148,6 @@
 
     - name: Launch the ping job template
       ansible.controller.job_launch:
-        job_template: "azure_ping"
+        job_template: "summit_demo_ping"
         validate_certs: false
       register: job
