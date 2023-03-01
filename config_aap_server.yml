@@ -33,6 +33,14 @@
         src: "{{ manifest }}"
         dest: "/tmp/manifest_AAP_demo.zip"
 
+    - name: grab ssh keys
+      ansible.builtin.fetch:
+        src: ~/.ssh/"{{ item }}"
+        dest: ./
+      vars:
+        ansible_ssh_user: "mdidato"
+      delegate_to: ansible.scuderiadidato.com
+
     - name: Set the license using a file
       ansible.controller.license:
         manifest: "/tmp/manifest_AAP_demo.zip"

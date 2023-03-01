@@ -1,0 +1,69 @@
+---
+
+- hosts: localhost
+  gather_facts: true
+  become: true
+  vars:
+    tenantid: "{{ lookup('env','AZURE_TENANT') }}"
+    resourcegroup: "{{ lookup('env','RESOURCEGROUP') }}"
+    vaultname: "summitdemo"
+    clientid: "{{ lookup('env','CLIENT_ID') }}"
+    client_secret: "{{ lookup('env','PASSWORD') }}"
+
+  tasks:
+    - name: az login
+      command: az login --service-principal -u "{{ clientid }}" -p "{{ client_secret }}" --tenant "{{ tenantid }}"
+
+    - name: get objectid
+      shell: az ad sp show --id "{{ clientid }}" |grep id |awk -F '\"' '{ print $4 }' |awk -F '\"' '{ print $1 }' |tail -1
+      register: results
+    
+    - name: set var
+      set_fact:
+        object: "{{ results.stdout }}"
+
+    - name: Create Keyvualt
+      azure_rm_keyvault:
+        resource_group: "{{ resourcegroup }}"
+        vault_name: "{{ vaultname }}"
+        enabled_for_deployment: yes
+        vault_tenant: "{{ tenantid }}"
+        sku:
+          name: standard
+        access_policies:
+         - tenant_id: "{{ tenantid }}"
+           object_id: "{{ object }}"
+           keys:
+             - get
+             - list
+             - encrypt
+             - decrypt
+             - wrapkey
+             - unwrapkey
+             - sign
+             - verify
+             - get
+             - list
+             - create
+             - update
+             - import
+             - delete
+             - backup
+             - restore
+             - recover
+             - purge
+           secrets:
+             - get
+             - list
+             - set
+             - delete
+             - backup
+             - restore
+             - recover
+             - purge
+
+    - name: Create a secret ssh pub key
+      azure_rm_keyvaultsecret:
+         secret_name: githubsshkey
+         secret_value: "{{ lookup('file','~/.ssh/github_rsa') }}"
+         keyvault_uri: https://{{ vaultname }}.vault.azure.net/
