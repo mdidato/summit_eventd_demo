@@ -138,7 +138,7 @@
         validate_certs: false
       register: job
 
-    - name: Install collection community.network
+    - name: Install collection ansible.eda
       community.general.ansible_galaxy_install:
         type: collection
         name: ansible.eda
