@@ -138,6 +138,11 @@
         validate_certs: false
       register: job
 
+- hosts: controller
+  gather_facts: false
+  become: true
+  tasks:
+
     - name: Install collection ansible.eda
       community.general.ansible_galaxy_install:
         type: collection
