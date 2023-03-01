@@ -47,7 +47,7 @@
 
     - name: ingest ssh private key
       slurp:
-        src: '/home/clouduser/.ssh/id_rsa_azure_vms'
+        src: '/tmp/id_cloud_init' 
       register: ssh_key
 
     - name: Set the license using a file
