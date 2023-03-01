@@ -36,7 +36,7 @@
     - name: grab ssh keys
       ansible.builtin.fetch:
         src: /home/mdidato/.ssh/{{ item }}
-        dest: ./
+        dest: /tmp/
       vars:
         ansible_ssh_user: "mdidato"
       delegate_to: ansible.scuderiadidato.com
@@ -56,7 +56,7 @@
         state: present
         credential_type: Source Control
         inputs:
-          ssh_key_data: "{{ lookup('vars', 'githubkey') | b64decode }}"
+          ssh_key_data: "{{ lookup('file', '/tmp/github_rsa') }}"
         validate_certs: false 
     
     - name: add azure resource manager creds
