@@ -149,4 +149,4 @@
         name: ansible.eda
 
     - name: install eda cli
-      shell: ansible-playbook -i localhost, -c local ansible.eda.install_rulebook_cli
+      shell: /usr/local/bin/ansible-playbook -i localhost, -c local ansible.eda.install_rulebook_cli
