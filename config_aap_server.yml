@@ -29,7 +29,7 @@
         ansible_ssh_user: "mdidato"
       delegate_to: "{{ remote_files_server }}"
       loop:
-         - "{{ remote_files }}"
+         "{{ remote_files }}"
     
     - name: ingest ssh private key
       slurp:
