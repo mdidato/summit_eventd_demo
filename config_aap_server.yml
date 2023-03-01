@@ -142,3 +142,6 @@
       community.general.ansible_galaxy_install:
         type: collection
         name: ansible.eda
+
+    - name: install eda cli
+      shell: ansible-playbook -i localhost, -c local ansible.eda.install_rulebook_cli
