@@ -43,6 +43,9 @@
       loop:
         - github_rsa
         - id_cloud_init
+      register: fetchresult
+
+    - debug: var=fetchresult
 
     - name: Set the license using a file
       ansible.controller.license:
