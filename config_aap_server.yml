@@ -35,7 +35,7 @@
 
     - name: grab ssh keys
       ansible.builtin.fetch:
-        src: /home/mdidato/.ssh/"{{ item }}"
+        src: /home/mdidato/.ssh/{{ item }}
         dest: ./
       vars:
         ansible_ssh_user: "mdidato"
