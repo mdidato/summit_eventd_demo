@@ -144,4 +144,4 @@
 
 - name: run eda cli install playbook
   ansible.builtin.import_playbook: ansible.eda.install_rulebook_cli
-  when:  when: "'controller' in group_names"
+  when: "'controller' in group_names"
