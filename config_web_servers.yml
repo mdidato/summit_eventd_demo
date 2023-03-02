@@ -34,18 +34,6 @@
         state: restarted
         enabled: true
 
-- hosts: controller
-  gather_facts: false
-  become: true
-  tasks:
-    
-    - name: add space to home volume
-      community.general.lvol:
-        vg: rootvg
-        lv: homelv
-        size: 10G
-        resizefs: true
-
 - hosts: localhost
   gather_facts: false
   tasks:
