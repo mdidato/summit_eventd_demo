@@ -144,5 +144,4 @@
 
 - name: run eda cli install playbook
   ansible.builtin.import_playbook: ansible.eda.install_rulebook_cli
-  vars:
-    limit: controller01
+  when:  when: "'controller' in group_names"
