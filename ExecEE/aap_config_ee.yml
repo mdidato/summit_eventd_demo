@@ -15,7 +15,7 @@
 #    ee_builder_image: autohub.scuderiadidato.com/ansible-builder-rhel8
     ee_pull_collections_from_hub: true
     ee_ah_host: autohub.scuderiadidato.com
-    ee_ah_token: ""
+    ee_ah_token: "4bfcf034ff196b1f9d9ec6078fb5ca6ebc4fc443"
     ee_verbosity: 1
     ee_stream: upstream
     ee_list:
@@ -24,5 +24,6 @@
           - name: redhat_cop.aap_utilities
           - name: ansible.controller
           - name: community.general
+          - name: ansible.eda
   roles:
     - redhat_cop.ee_utilities.ee_builder

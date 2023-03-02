@@ -141,12 +141,6 @@
 - hosts: controller
   gather_facts: false
   become: true
-  tasks:
-
-    - name: Install collection ansible.eda
-      community.general.ansible_galaxy_install:
-        type: collection
-        name: ansible.eda
 
 - name: run eda cli install playbook
   ansible.builtin.import_playbook: ansible.eda.install_rulebook_cli
