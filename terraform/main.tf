@@ -269,7 +269,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm_monitoring" {
   source_image_reference {
     publisher = "RedHat"
     offer     = "RHEL"
-    sku       = "8_0"
+    sku       = "8.6"
     version   = "latest"
   }
 
