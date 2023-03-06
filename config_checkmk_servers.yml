@@ -17,6 +17,7 @@
         port: 5000/tcp
         permanent: true
         state: enabled
+        zone: public
   
   roles:
      - role: tribe29.checkmk.server
