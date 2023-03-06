@@ -46,6 +46,14 @@ resource "azurerm_public_ip" "my_terraform_public_ip_aap" {
   allocation_method   = "Dynamic"
 }
 
+resource "azurerm_public_ip" "my_terraform_public_ip_monitoring" {
+  count               = length(var.monitoringservername)
+  name                = "${var.monitoringservername[count.index]}_pubip"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Dynamic"
+}
+
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "my_terraform_nsg" {
   name                = "SummitNSG"
@@ -117,6 +125,20 @@ resource "azurerm_network_interface" "my_terraform_nic_aap" {
   }
 }
 
+# create network interface for monitoring servers
+resource "azurerm_network_interface" "my_terraform_nic_monitoring" {
+  count               = length(var.monitoringservername)
+  name                = "${var.monitoringservername[count.index]}_nic"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+
+  ip_configuration {
+    name                          = "${var.monitoringservername[count.index]}_nic_config"
+    subnet_id                     = azurerm_subnet.my_terraform_subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip_monitoring[count.index].id
+  }
+}
 
 # Connect the security group to the network interface
 resource "azurerm_network_interface_security_group_association" "WebnsgConnect" {
@@ -128,6 +150,12 @@ resource "azurerm_network_interface_security_group_association" "WebnsgConnect" 
 resource "azurerm_network_interface_security_group_association" "AAPnsgConnect" {
   count               = length(var.aapservername)
   network_interface_id      = azurerm_network_interface.my_terraform_nic_aap[count.index].id
+  network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "monitornsgConnect" {
+  count               = length(var.monitoringservername)
+  network_interface_id      = azurerm_network_interface.my_terraform_nic_monitoring[count.index].id
   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 }
 
@@ -210,6 +238,42 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm_aap" {
   }
 
   computer_name                   = var.aapservername[count.index]
+  admin_username                  = "azureuser"
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDPZA3N3U15rqQVtgUBH9inE6YW/ubCGJ8dkVqmMp8pTCTMG9wNmIlx0/hzu8gmAAR4PM6DBtjQMVgAukNoUNAOM9UAgEILWcWXbP7OfVQGit03GAsn2u+M6yJd1rXMeSDEYOYRocabt5vWdNhJNkbyitgNTA6SklqmDbQe/7cMVWzZCwEmW3vS5i2laNOEYOVXDjv2q0RDDlW/orufquRJntXuLY7LqSkiv0V+aVtXciXgj1IZh33sZ/hqQl7QqDI/tX4Xi6LFq6gipjrJHYIjzoi/dEO8zAHsQQVfHoeM/Qt9lcDDz5Oe2XJFhRFosplXvDO6/2imodG1vOW9ZRvxbqiix6+yxflgo9vhZ9GIgPiHXKoiCQtl9qXnPS/wZcDAFJkvEPFSMvGCpivbzJjeCCaSN9Igefvq2DMuxCmUCMR+U1JznwOr+bgWS23iZ63x1WcR80Sf6EW93bIWxa8cqkrO3pNHBR4/KcAWcwlb2iSgfxviZhhjYIr6asOYFK9vtaStgI7jzs0Y35g9Tp2XrgkFt8feVMfcpZ9q5qi647romYESeThY/yLtyoGaDTjICFotOKwRH0G4i9JFTAJm3CjEaXMp4WLaK94tuM+BQJrzevXjLBKZX2cDh2PE6fB26Fp3BTKFjdH3c27CvTNRC1w0W425pS+RPdjRESYNwQ== mdidato@mdidato-mac"
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
+  }
+}
+
+# Create virtual machine monitoring servers
+resource "azurerm_linux_virtual_machine" "my_terraform_vm_monitoring" {
+  count                 = length(var.monitoringservername)
+  name                  = var.monitoringservername[count.index]
+  location              = var.resource_group_location
+  resource_group_name   = var.resource_group_name
+  network_interface_ids = [azurerm_network_interface.my_terraform_nic_monitoring[count.index].id]
+  size                  = "Standard_B4ms"
+
+  os_disk {
+    name                 = "${var.monitoringservername[count.index]}_OSdisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "8_0"
+    version   = "latest"
+  }
+
+  computer_name                   = var.monitoringservername[count.index]
   admin_username                  = "azureuser"
   disable_password_authentication = true
 

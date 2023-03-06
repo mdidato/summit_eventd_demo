@@ -27,3 +27,13 @@ variable "aapservername" {
 {% endfor %}
     ]
 }
+
+variable "monitoringservername" {
+  description = "list of check_mk servers names to build"
+  type        = list(string)
+  default     = [
+{% for server in MONITORINGSERVERS %}
+    "{{server}}",
+{% endfor %}
+    ]
+}
