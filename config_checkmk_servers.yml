@@ -18,6 +18,7 @@
         permanent: true
         state: enabled
         zone: public
+        immediate: true
   
   roles:
      - role: tribe29.checkmk.server

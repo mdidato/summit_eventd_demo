@@ -1,0 +1,21 @@
+- name: Playbook custom EE with check_mk collection
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - redhat_cop.ee_utilities
+  vars:
+    ee_registry_dest: autohub.scuderiadidato.com
+    ee_registry_username: admin
+    ee_registry_password: "{{ lookup('env','CONTROLLER_PASSWORD') }}"
+    ee_pull_collections_from_hub: true
+    ee_ah_host: autohub.scuderiadidato.com
+    ee_ah_token: "83bb4835e9c4b06ee7f547eac7ebf0cbd480ce53"
+    ee_verbosity: 1
+    ee_stream: upstream
+    ee_list:
+      - name: checkmk_config_ee
+        collections:
+          - name: community.general
+          - name: tribe29.checkmk
+  roles:
+    - redhat_cop.ee_utilities.ee_builder
