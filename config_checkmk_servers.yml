@@ -31,3 +31,60 @@
              update_conflict_resolution: abort
              state: started
              admin_pw: "{{ check_mk_site_pass }}"
+    
+     
+     
+- hosts: webservers:controller
+  gather_facts: true
+  become: true     
+  roles:
+
+     - role: tribe29.checkmk.agent
+       vars:
+         checkmk_agent_version: "2.1.0p23"
+         checkmk_agent_edition: cfe
+         checkmk_agent_server: "{{ hostvars['checkmk01']['ansible_default_ipv4']['address'] }}"
+         checkmk_agent_delegate_api_calls: "checkmk01"
+         checkmk_agent_server_validate_certs: 'false'
+         checkmk_agent_site: summitdemo
+         checkmk_agent_user: cmkadmin
+         checkmk_agent_pass: "{{ check_mk_site_pass }}"
+         checkmk_agent_add_host: 'true'
+         checkmk_agent_host_name: "{{ inventory_hostname }}"
+         checkmk_agent_discover: 'true'
+         checkmk_agent_update: 'true'
+         checkmk_agent_host_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+         checkmk_agent_auto_activate: 'true'
+
+
+- hosts: webservers:controller
+  gather_facts: false
+  become: true  
+  vars:
+    checkmk_agent_server_validate_certs: 'false'
+    checkmkip: "{{ hostvars['controller01'].ansible_host }}"
+    server_url: "http://{{ checkmkip }}/"
+    site: summitdemo
+  tasks:   
+     
+     - name: "Discover services on host."
+       tribe29.checkmk.discovery:
+          server_url: "{{ server_url }}"
+          site: "{{ site }}"
+          automation_user: "cmkadmin"
+          automation_secret: "{{ check_mk_site_pass }}"
+          host_name: "{{ inventory_hostname }}"
+          state: "fix_all"
+          validate_certs: "{{ checkmk_agent_server_validate_certs | bool }}"
+       delegate_to: localhost
+
+     - name: "Activate Changes."
+       tribe29.checkmk.activation:
+         server_url: "{{ server_url }}"
+         site: "{{ site }}"
+         automation_user: "cmkadmin"
+         automation_secret: "{{ check_mk_site_pass }}"
+         force_foreign_changes: "true"
+       delegate_to: "localhost"
+       run_once: 'true'
+    
