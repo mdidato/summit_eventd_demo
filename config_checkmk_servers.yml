@@ -55,5 +55,7 @@
          checkmk_agent_update: 'true'
          checkmk_agent_host_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
          checkmk_agent_auto_activate: 'true'
+         checkmk_agent_registration_server: "{{ checkmk_agent_server }}"
+         checkmk_agent_registration_site: "{{ checkmk_agent_site }}"
 
 
