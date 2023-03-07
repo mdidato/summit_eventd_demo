@@ -57,34 +57,34 @@
          checkmk_agent_auto_activate: 'true'
 
 
-- hosts: webservers:controller
-  gather_facts: false
-  become: true  
-  vars:
-    checkmk_agent_server_validate_certs: 'false'
-    checkmkip: "{{ hostvars['controller01'].ansible_host }}"
-    server_url: "http://{{ checkmkip }}/"
-    site: summitdemo
-  tasks:   
-     
-     - name: "Discover services on host."
-       tribe29.checkmk.discovery:
-          server_url: "{{ server_url }}"
-          site: "{{ site }}"
-          automation_user: "cmkadmin"
-          automation_secret: "{{ check_mk_site_pass }}"
-          host_name: "{{ inventory_hostname }}"
-          state: "fix_all"
-          validate_certs: "{{ checkmk_agent_server_validate_certs | bool }}"
-       delegate_to: localhost
-
-     - name: "Activate Changes."
-       tribe29.checkmk.activation:
-         server_url: "{{ server_url }}"
-         site: "{{ site }}"
-         automation_user: "cmkadmin"
-         automation_secret: "{{ check_mk_site_pass }}"
-         force_foreign_changes: "true"
-       delegate_to: "localhost"
-       run_once: 'true'
-    
+#- hosts: webservers:controller
+#  gather_facts: false
+#  become: true  
+#  vars:
+#    checkmk_agent_server_validate_certs: 'false'
+#    checkmkip: "{{ hostvars['controller01'].ansible_host }}"
+#    server_url: "http://{{ checkmkip }}/"
+#    site: summitdemo
+#  tasks:   
+#     
+#     - name: "Discover services on host."
+#       tribe29.checkmk.discovery:
+#          server_url: "{{ server_url }}"
+#          site: "{{ site }}"
+#          automation_user: "cmkadmin"
+#          automation_secret: "{{ check_mk_site_pass }}"
+#          host_name: "{{ inventory_hostname }}"
+#          state: "fix_all"
+#          validate_certs: "{{ checkmk_agent_server_validate_certs | bool }}"
+#       delegate_to: localhost
+#
+#     - name: "Activate Changes."
+#       tribe29.checkmk.activation:
+#         server_url: "{{ server_url }}"
+#         site: "{{ site }}"
+#         automation_user: "cmkadmin"
+#         automation_secret: "{{ check_mk_site_pass }}"
+#         force_foreign_changes: "true"
+#       delegate_to: "localhost"
+#       run_once: 'true'
+#    

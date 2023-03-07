@@ -17,5 +17,6 @@
         collections:
           - name: community.general
           - name: tribe29.checkmk
+          - name: ansible.utils
   roles:
     - redhat_cop.ee_utilities.ee_builder
